@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Text Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #4ea5d0; /* Light pink background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #061c18;
+            font-size: 36px;
+            margin-top: 20px;
+        }
+
+        #toolbar-top {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #toolbar-top button {
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f7f7f7;
+            cursor: pointer;
+        }
+
+        #toolbar-top button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #container {
+            width: 600px;
+            height: 400px;
+            border: 3px solid #00b894;
+            background-color: #fff;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #text-box {
+            position: absolute;
+            cursor: move;
+            font-size: 20px;
+            font-weight: normal;
+            font-style: normal;
+            text-decoration: none;
+        }
+
+        #toolbar-left, #toolbar-right {
+            position: absolute;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #toolbar-left {
+            left: -200px; /* Adjust to position on left */
+        }
+
+        #toolbar-right {
+            right: -200px; /* Adjust to position on right */
+        }
+
+        #toolbar-left select, #toolbar-left input,
+        #toolbar-right button, #toolbar-right input {
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f7f7f7;
+        }
+
+        #toolbar-right .icon-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        #addTextBtn {
+            font-size: 14px;
+            background-color: #00b894;
+            color: white;
+            padding: 7px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #addTextBtn:hover {
+            background-color: #019170;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Celebrare</h1>
+
+<div id="toolbar-top">
+    <button onclick="undo()">Undo</button>
+    <button onclick="redo()">Redo</button>
+</div>
+
+<div id="container">
+    <div id="text-box">Move me</div>
+
+    <!-- Toolbar on the Left -->
+    <div id="toolbar-left">
+        <label for="font-family">Font:</label>
+        <select id="font-family" onchange="changeFontFamily()">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Tahoma">Tahoma</option>
+        </select>
+
+        <label for="font-size">Size:</label>
+        <input type="number" id="fontSize" value="20" min="10" max="72" onchange="changeFontSize()">
+
+        <label for="text-color">Text Color:</label>
+        <input type="color" id="text-color" value="#000000" onchange="changeTextColor()">
+
+        <label for="bg-color">Background Color:</label>
+        <input type="color" id="bg-color" value="#ffffff" onchange="changeBackgroundColor()">
+    </div>
+
+    <!-- Toolbar on the Right -->
+    <div id="toolbar-right">
+        <button class="icon-btn" onclick="toggleBold()">B</button>
+        <button class="icon-btn" onclick="toggleItalic()">I</button>
+        <button class="icon-btn" onclick="toggleUnderline()">U</button>
+
+        <button onclick="alignText('left')">Left</button>
+        <button onclick="alignText('center')">Center</button>
+        <button onclick="alignText('right')">Right</button>
+        <button onclick="alignText('justify')">Justify</button>
+
+        <button id="addTextBtn" onclick="addText()">Add Text</button>
+    </div>
+</div>
+
+<script>
+    let textBox = document.getElementById('text-box');
+    let undoStack = [];
+    let redoStack = [];
+    let isDragging = false;
+    let startX, startY;
+
+    // Initialize with some default styles
+    textBox.style.left = '50%';
+    textBox.style.top = '50%';
+    textBox.style.transform = 'translate(-50%, -50%)';
+
+    textBox.onmousedown = function(event) {
+        isDragging = true;
+        startX = event.clientX - textBox.offsetLeft;
+        startY = event.clientY - textBox.offsetTop;
+        undoStack.push({ x: textBox.style.left, y: textBox.style.top });
+        redoStack = [];
+    };
+
+    document.onmousemove = function(event) {
+        if (isDragging) {
+            textBox.style.left = event.clientX - startX + 'px';
+            textBox.style.top = event.clientY - startY + 'px';
+            textBox.style.transform = '';  // Reset transform when dragging
+        }
+    };
+
+    document.onmouseup = function() {
+        isDragging = false;
+    };
+
+    // Add text functionality
+    function addText() {
+        let newText = prompt('Enter text:');
+        if (newText) {
+            textBox.textContent = newText;
+        }
+    }
+
+    // Change font family
+    function changeFontFamily() {
+        let fontFamily = document.getElementById('font-family').value;
+        textBox.style.fontFamily = fontFamily;
+    }
+
+    // Change font size
+    function changeFontSize() {
+        let newSize = document.getElementById('fontSize').value;
+        textBox.style.fontSize = newSize + 'px';
+    }
+
+    // Change text color
+    function changeTextColor() {
+        let color = document.getElementById('text-color').value;
+        textBox.style.color = color;
+    }
+
+    // Change background color
+    function changeBackgroundColor() {
+        let color = document.getElementById('bg-color').value;
+        textBox.style.backgroundColor = color;
+    }
+
+    // Toggle Bold
+    function toggleBold() {
+        if (textBox.style.fontWeight === 'bold') {
+            textBox.style.fontWeight = 'normal';
+        } else {
+            textBox.style.fontWeight = 'bold';
+        }
+    }
+
+    // Toggle Italic
+    function toggleItalic() {
+        if (textBox.style.fontStyle === 'italic') {
+            textBox.style.fontStyle = 'normal';
+        } else {
+            textBox.style.fontStyle = 'italic';
+        }
+    }
+
+    // Toggle Underline
+    function toggleUnderline() {
+        if (textBox.style.textDecoration === 'underline') {
+            textBox.style.textDecoration = 'none';
+        } else {
+            textBox.style.textDecoration = 'underline';
+        }
+    }
+
+    // Text alignment
+    function alignText(alignment) {
+        textBox.style.textAlign = alignment;
+    }
+
+    // Undo/Redo Functionality
+    function undo() {
+        if (undoStack.length > 0) {
+            let lastState = undoStack.pop();
+            redoStack.push({ x: textBox.style.left, y: textBox.style.top });
+            textBox.style.left = lastState.x;
+            textBox.style.top = lastState.y;
+        }
+    }
+
+    function redo() {
+        if (redoStack.length > 0) {
+            let nextState = redoStack.pop();
+            undoStack.push({ x: textBox.style.left, y: textBox.style.top });
+            textBox.style.left = nextState.x;
+            textBox.style.top = nextState.y;
+        }
+    }
+</script>
+
+</body>
+</html>
