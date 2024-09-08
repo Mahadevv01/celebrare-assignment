@@ -51,11 +51,21 @@ This project is a web-based text editor that allows users to add, move, and styl
    # or
    yarn start
    
- **Contributing**
-Feel free to open issues or submit pull requests if you want to contribute to the project. Please make sure to follow the coding guidelines and project structure.
+## Contributing
 
-**License**
-This project is licensed under the MIT License - see the LICENSE file for details.
+Feel free to open issues or submit pull requests if you want to contribute to the project. When contributing, please adhere to the following guidelines:
+
+- **Coding Standards**: Follow the coding style used in the project.
+- **Documentation**: Ensure that new features or changes are well-documented.
+- **Testing**: Add or update tests to cover new or changed functionality.
+- **Commit Messages**: Write clear and concise commit messages.
+
+Please ensure your contributions align with the project's objectives and overall design.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
  
 
 
