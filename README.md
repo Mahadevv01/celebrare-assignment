@@ -31,3 +31,30 @@ This project is a web-based text editor that allows users to add, move, and styl
 
    ```bash
    git clone https://github.com/Mahadevv01/celebrare-assignment.git
+   
+2. **Navigate to the Project Directory:**:
+
+   ```bash
+   cd celebrare-assignment
+
+3. **Install Dependencies:**:
+
+   ```bash
+   npm install
+   # or
+   yarn install
+
+4. *Run the Development Server:**:
+
+   ```bash
+   npm start
+   # or
+   yarn start
+   
+
+
+   
+
+
+   
+
